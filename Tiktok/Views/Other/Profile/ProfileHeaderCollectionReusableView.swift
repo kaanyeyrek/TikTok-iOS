@@ -20,7 +20,7 @@ protocol ProfileHeaderCollectionReusableViewDelegate: AnyObject {
 class ProfileHeaderCollectionReusableView: UICollectionReusableView {
     
     static let identifier = "ProfileHeaderCollectionReusableView"
-     
+    
     weak var delegate: ProfileHeaderCollectionReusableViewDelegate?
     
     var viewModel: ProfileHeaderViewModel?
@@ -57,12 +57,13 @@ class ProfileHeaderCollectionReusableView: UICollectionReusableView {
         button.layer.cornerRadius = 6
         button.layer.masksToBounds = true
         button.setTitle("0\nFollowing", for: .normal)
+        button.setTitleColor(.label, for: .normal)
         button.titleLabel?.textAlignment = .center
         button.titleLabel?.numberOfLines = 2
         button.backgroundColor = .secondarySystemBackground
         return button
         }()
-  
+    
     
     
     
@@ -73,6 +74,7 @@ class ProfileHeaderCollectionReusableView: UICollectionReusableView {
         // Add subviews
         addSubviews()
         configureButton()
+        
         let tap = UITapGestureRecognizer(target: self, action: #selector(didTapAvatar))
         avatarImageView.isUserInteractionEnabled = true
         avatarImageView.addGestureRecognizer(tap)
@@ -82,7 +84,7 @@ class ProfileHeaderCollectionReusableView: UICollectionReusableView {
     
     @objc private func didTapAvatar() {
         guard let viewModel = viewModel else {
-            return
+           return
         }
         delegate?.profileHeaderCollectionReusableView(self, didTapAvatarButtonWith: viewModel)
     }

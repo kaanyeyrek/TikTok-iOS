@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseCore
+import Appirater
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,6 +17,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        Appirater.appLaunched(true)
+        Appirater.setDebug(false)
+        Appirater.setAppId("232132323")
+        Appirater.setDaysUntilPrompt(7)
+       
+        
+        
+        
         let window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = TabBarViewController()
         self.window = window

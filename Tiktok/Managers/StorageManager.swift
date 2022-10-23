@@ -8,19 +8,20 @@
 import Foundation
 import FirebaseStorage
 
-
+// Manager objet that deals with firebase storage
 final class StorageManager {
-    
+    // Shared singleton instance
     public static let shared = StorageManager()
-    
+    // Storage bucket
     private let storageBucket = Storage.storage().reference()
-    
+    // Private constructor
     private init() {
         
     }
     
+    // Public
     
-    
+    // Upload Video
     public func uploadVideoURL(from url: URL, fileName: String, completion: @escaping (Bool) -> Void) {
         guard let username = UserDefaults.standard.string(forKey: "username") else {
             return
@@ -29,6 +30,8 @@ final class StorageManager {
             completion(error == nil)
         }
     }
+    // Upload new profile picture
+    // Download profile picture
     
     public func uploadProfilePicture(with image: UIImage, completion: @escaping (Result<URL, Error>) -> Void) {
         guard let username = UserDefaults.standard.string(forKey: "username") else {
@@ -58,7 +61,7 @@ final class StorageManager {
         }
     }
     
-    
+    //MARK: - Generate New Video fileName
     public func generateVideoName() -> String {
         
         let uuidString = UUID().uuidString
@@ -69,7 +72,7 @@ final class StorageManager {
         
         
     }
-    
+    //MARK: - Get Download url of video post
     func getDownloadURL(for post: PostModel, completion: @escaping (Result<URL, Error>) -> Void) {
         storageBucket.child(post.videoChildPath).downloadURL { url, error in
             if let error = error {

@@ -180,7 +180,7 @@ class PostViewController: UIViewController {
        
     }
     private func configureVideo() {
-        
+
         StorageManager.shared.getDownloadURL(for: model) { [weak self] result in
             DispatchQueue.main.async {
                 guard let strongSelf = self else {
@@ -214,50 +214,39 @@ class PostViewController: UIViewController {
                     playerLayer.videoGravity = .resizeAspectFill
                     strongSelf.player?.volume = 0
                     strongSelf.player?.play()
-                    
-                    
-                    
+
                 }
-                
+
             }
-           
+
         }
-        
- 
+
         guard let player = player else {
             return
         }
-        
+
         playerDidFinishObserver = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: .main)
-        { _ in
-            player.seek(to: .zero)
-            player.play()
-            
-        }
-        
+            { _ in
+                player.seek(to: .zero)
+                player.play()
+            }
+
     }
-        
-        
-        
-        
-    
-    
+
     func setUpDoubleTapToLike() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(didDoubleTap(_:)))
         tap.numberOfTapsRequired = 2
         view.addGestureRecognizer(tap)
         view.isUserInteractionEnabled = true
-        
     }
-    
+
     @objc private func didDoubleTap(_ gesture: UITapGestureRecognizer) {
         if !model.isLikedByCurrentUser {
             model.isLikedByCurrentUser = true
-            
         }
-        
+        HapticsManager.shared.vibrateForSelection()
         let touchLocation = gesture.location(in: view)
-        
+
         let imageView = UIImageView(image: UIImage(systemName: "heart.fill"))
         imageView.tintColor = .systemRed
         imageView.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
@@ -269,17 +258,15 @@ class PostViewController: UIViewController {
             imageView.alpha = 1
         } completion: { done in
             if done {
-                DispatchQueue.main.asyncAfter(deadline: .now()+0.2) {
-                    
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                     UIView.animate(withDuration: 0.2) {
                         imageView.alpha = 0
-                        
+
                     } completion: { done in
                         if done {
                             imageView.removeFromSuperview()
                         }
                     }
-                    
                 }
                 
             }

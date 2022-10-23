@@ -11,18 +11,16 @@ import SafariServices
 class SignUpViewController: UIViewController {
 
     public var completion: (() -> Void)?
-    
-    
+
     private let logoImageView: UIImageView = {
-       let imageView = UIImageView()
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.image = UIImage(named: "logo")
         imageView.layer.masksToBounds = true
         imageView.layer.cornerRadius = 10
         return imageView
-        
     }()
-    
+
     private let usernameField = AuthField(type: .username)
     private let emailField = AuthField(type: .email)
     private let passwordField = AuthField(type: .password)
@@ -30,11 +28,8 @@ class SignUpViewController: UIViewController {
     private let signUpButton = AuthButton(type: .signUp, title: nil)
     private let TermsOfServiceButton = AuthButton(type: .plain, title: "Terms of Service")
 
-   
-  
-    
-    
-    //MARK: - LifeCycle
+
+    // MARK: - LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -101,39 +96,39 @@ class SignUpViewController: UIViewController {
         
         
     }
- 
+
     @objc private func didTapSignUp() {
         didTapKeyboardDone()
         guard let email = emailField.text, let password = passwordField.text, let username = usernameField.text,
               !email.trimmingCharacters(in: .whitespaces).isEmpty,
-              !password.trimmingCharacters(in: .whitespaces).isEmpty, 
+              !password.trimmingCharacters(in: .whitespaces).isEmpty,
               !username.trimmingCharacters(in: .whitespaces).isEmpty,
               password.count >= 6,
               !username.contains(" "),
               !username.contains(".")
-                else {
-                  let alert = UIAlertController(title: "Woops!", message: "Please make sure to enter a valid username, email, and password. Your password must be atleast 6 characters long", preferredStyle: .alert)
-                  alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
-                  present(alert, animated: true)
-                  return
-              }
-        
-        
+        else {
+            let alert = UIAlertController(title: "Woops!", message: "Please make sure to enter a valid username, email, and password. Your password must be atleast 6 characters long", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
+            present(alert, animated: true)
+            return
+        }
+
         AuthManager.shared.signUp(with: username, emailAdress: email, password: password) { success in
             DispatchQueue.main.async {
                 if success {
+                    HapticsManager.shared.vibrate(for: .success)
                     self.dismiss(animated: true, completion: nil)
                 } else {
+                    HapticsManager.shared.vibrate(for: .error)
                     let alert = UIAlertController(title: "Woops!", message: "Something went wrong when trying to register. Please try again.", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
                     self.present(alert, animated: true)
-                    
                 }
             }
         }
-        
+
     }
-  
+
     @objc private func didTapTerms() {
         didTapKeyboardDone()
         guard let url = URL(string: "https://www.tiktok.com/terms") else {
@@ -144,9 +139,6 @@ class SignUpViewController: UIViewController {
     }
 
 }
-
-  
-
 extension SignUpViewController: UITextFieldDelegate {
     
 }

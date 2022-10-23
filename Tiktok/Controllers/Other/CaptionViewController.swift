@@ -7,6 +7,7 @@
 
 import UIKit
 import ProgressHUD
+import Appirater
 
 class CaptionViewController: UIViewController {
 
@@ -62,6 +63,7 @@ class CaptionViewController: UIViewController {
                 if success {
                     DatabaseManager.shared.insertPost(fileName: videoName, caption: caption) { databaseUpdated in
                         if databaseUpdated {
+                            Appirater.tryToShowPrompt()
                             HapticsManager.shared.vibrate(for: .success)
                             ProgressHUD.dismiss()
                             self?.navigationController?.popToRootViewController(animated: true)

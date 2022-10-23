@@ -110,34 +110,38 @@ class NotificationViewController: UIViewController, UITableViewDelegate, UITable
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         notifications.count
     }
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let model = notifications[indexPath.row]
-        
+
         switch model.type {
-        case .postLike(postName: let postName):
+        case let .postLike(postName: postName):
             guard let cell = tableView.dequeueReusableCell(withIdentifier: NotificationsPostLikeTableViewCell.identifier, for: indexPath) as? NotificationsPostLikeTableViewCell else {
                 return tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
             }
+
             cell.delegate = self
             cell.configure(with: postName, model: model)
             return cell
-        case .userFollow(username: let username):
+        case let .userFollow(username: username):
             guard let cell = tableView.dequeueReusableCell(withIdentifier: NotificationsUserFollowTableViewCell.identifier, for: indexPath) as? NotificationsUserFollowTableViewCell else {
-                return tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-            }
-            cell.delegate = self
-            cell.configure(with: username, model: model)
-            return cell
-            
-        case .postComment(postName: let postName):
+            return tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        }
+
+        cell.delegate = self
+        cell.configure(with: username, model: model)
+        return cell
+
+        case let .postComment(postName: postName):
             guard let cell = tableView.dequeueReusableCell(withIdentifier: NotificationsPostCommentTableViewCell.identifier, for: indexPath) as? NotificationsPostCommentTableViewCell else {
                 return tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
             }
+
             cell.delegate = self
             cell.configure(with: postName, model: model)
             return cell
         }
-        
+
     }
     
     
@@ -151,63 +155,53 @@ class NotificationViewController: UIViewController, UITableViewDelegate, UITable
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 80
     }
-    
-    
+
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         guard editingStyle == .delete else {
             return
         }
-        
+
         let model = notifications[indexPath.row]
         model.isHidden = true
-        
+
         DatabaseManager.shared.markNotificationAsHidden(notificationID: model.identifier) { [weak self] success in
             DispatchQueue.main.async {
                 if success {
                     self?.notifications = self?.notifications.filter({ $0.isHidden == false }) ?? []
-                   
+
                     tableView.beginUpdates()
                     tableView.deleteRows(at: [indexPath], with: .fade)
                     tableView.endUpdates()
-                    
                 }
             }
         }
- 
-     
+
     }
-    
-    
-    
+
 }
 
 extension NotificationViewController: NotificationsUserFollowTableViewCellDelegate {
     func notificationsUserFollowTableViewCell(_ cell: NotificationsUserFollowTableViewCell, didTapFollowFor username: String) {
-        DatabaseManager.shared.follow(username: username) { success in
+        DatabaseManager.shared.updateRelationship(for: User(username: username, profilePictureURL: nil, identifier: UUID().uuidString), follow: true) { success in
             if !success {
-                print("something failed")
-                
-            }
+                // Something went wrong
+            } 
         }
-        
     }
-    
+
     func notificationsUserFollowTableViewCell(_ cell: NotificationsUserFollowTableViewCell, didTapAvatarFor username: String) {
+        HapticsManager.shared.vibrateForSelection()
         let vc = ProfileViewController(user: User(username: username, profilePictureURL: nil, identifier: "123"))
         vc.title = username.uppercased()
         navigationController?.pushViewController(vc, animated: true)
-        
     }
-    
 
 }
 
 extension NotificationViewController: NotificationsPostLikeTableViewCellDelegate {
     func notificationsPostLikeTableViewCell(_ cell: NotificationsPostLikeTableViewCell, didTapPostWith identifier: String) {
-      openPost(with: identifier)
+        openPost(with: identifier)
     }
-    
-    
 }
 
 
